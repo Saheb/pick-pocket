@@ -20,6 +20,13 @@ function clean_ieaa_store() {
       });
 }
 
+var groupBy = function(xs, key) {
+  return xs.reduce(function(rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};
+
 var controller = {
     loadData: function(filter) {
         return $.ajax({
@@ -67,7 +74,7 @@ function load_ideas() {
       						tmp["Link"] = link;
       						for(i in items[link][idea])
       						{
-      							tmp["Date"] = i;
+      							tmp["Date"] = i.split('T')[0];
       							tmp["Idea"] = items[link][idea][i];	
       						}
       						ideas.push(tmp);
@@ -75,33 +82,46 @@ function load_ideas() {
       				}
       			}
 
-		 $("#jsGrid").jsGrid({
-        width: "100%",
-        height: "800px",
+     var groupedByDate = groupBy(ideas, 'Date');
+     var groupedByLink = groupBy(ideas, 'Link');
+
+     console.log(groupedByDate);
+     console.log(groupedByLink);
+     
+     for (var obj in groupedByLink) {
+       var $link = $("<a>").attr("href", obj).attr("target", "_blank").text(obj);
+       $('#idea_list').append($link).append('<br>');
+       for(var idea in groupedByLink[obj]) {
+         $('#idea_list').append('<li>' + groupedByLink[obj][idea].Idea).append('<br>');
+       }
+     }              
+		 // $("#jsGrid").jsGrid({
+   //      width: "100%",
+   //      height: "800px",
  
-        inserting: true,
-        editing: false,
-        sorting: true,
-        paging: true,
-        searching: true,
+   //      inserting: true,
+   //      editing: false,
+   //      sorting: true,
+   //      paging: true,
+   //      searching: true,
  
-        data: ideas,
-        controller: controller,
+   //      data: ideas,
+   //      controller: controller,
  
-        fields: [
-            { name: "Date", type: "text", width: 100},
-            //{ name: "Link", type: "link", width: 100 },
-            { name: "Idea", type: "text", width: 450},
-            { type: "control",
-              editButton: false,
-              itemTemplate: function(value, item) {
-                              var $link = $("<a>").attr("href", item.Link).attr("target", "_blank").text("Link");
-                              return $("<div>").append($link);
-                          } 
-            }
-        ]
-    });
-  	});
+   //      fields: [
+   //          { name: "Date", type: "text", width: 100},
+   //          //{ name: "Link", type: "link", width: 100 },
+   //          { name: "Idea", type: "text", width: 450},
+   //          { type: "control",
+   //            editButton: false,
+   //            itemTemplate: function(value, item) {
+   //                            var $link = $("<a>").attr("href", item.Link).attr("target", "_blank").text("Link");
+   //                            return $("<div>").append($link);
+   //                        } 
+   //          }
+   //      ]
+   //  });
+  });
 }
 //clean_ieaa_store();
 load_ideas();

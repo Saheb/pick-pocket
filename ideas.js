@@ -100,7 +100,6 @@ function load_ideas() {
                           } 
             }
         ]
-        }
     });
   	});
 }

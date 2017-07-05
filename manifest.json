@@ -5,6 +5,9 @@
   "permissions": [
     "contextMenus", "storage"
   ],
+  "icons" : {
+    "16" : "idea3.png"
+  },
   "content_scripts": [
     {
       "matches": [

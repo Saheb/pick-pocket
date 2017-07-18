@@ -88,12 +88,14 @@ function load_ideas() {
      console.log(groupedByDate);
      console.log(groupedByLink);
      
-     for (var obj in groupedByLink) {
-       var $link = $("<a>").attr("href", obj).attr("target", "_blank").text(obj);
-       $('#idea_list').append($link).append('<br>');
-       for(var idea in groupedByLink[obj]) {
-         $('#idea_list').append('<li>' + groupedByLink[obj][idea].Idea).append('<br>');
+     for (var obj in groupedByDate) {
+       $('#idea_list').append('<h4>' + obj + '</h4>').append('<br>');
+       for(var idea in groupedByDate[obj]) {
+         var $link = $("<a>").attr("href", groupedByDate[obj][idea].Link).attr("target", "_blank").text('Link');
+         var $item = $('<li> <p>').text(groupedByDate[obj][idea].Idea).append(' -> ').append($link);
+         $('#idea_list').append($item).append('<br>');
        }
+       $('#idea_list').append('<hr>');
      }              
 		 // $("#jsGrid").jsGrid({
    //      width: "100%",

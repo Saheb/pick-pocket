@@ -100,7 +100,7 @@ function load_ideas() {
      console.log(groupedDateKeys.sort());             
      for (dt = groupedDateKeys.length - 1; dt >= 0 ; dt--) {
          console.log(keys[dt]);
-       $('#idea_list').append('<h4>' + toDateString(keys[dt]) + '</h4>').append('<br>');
+       $('#idea_list').append('<h3>' + toDateString(keys[dt]) + '</h3>').append('<br>');
         groupedByDate[keys[dt]].sort(function(a, b) {
             return (a.Timestamp > b.Timestamp) ? -1 : ((a.Timestamp < b.Timestamp) ? 1 : 0);
         });
@@ -139,5 +139,5 @@ function load_ideas() {
    //  });
   });
 }
-cleanIdeaStore();
+//cleanIdeaStore();
 load_ideas();

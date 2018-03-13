@@ -14,10 +14,14 @@ var js = document.createElement('script');
 js.src = chrome.extension.getURL('jsgrid.min.js');
 (document.head||document.documentElement).appendChild(js);
 
-function clean_ieaa_store() {
+function cleanIdeaStore() {
 	 chrome.storage.local.clear(function() {
       console.log('Store Cleaned!');
       });
+}
+
+function toDateString(str) {
+    return new Date(Date.parse(str)).toDateString();
 }
 
 var groupBy = function(xs, key) {
@@ -74,7 +78,8 @@ function load_ideas() {
       						tmp["Link"] = link;
       						for(i in items[link][idea])
       						{
-      							tmp["Date"] = i.split('T')[0];
+                                tmp["Date"] = i.split('T')[0];
+                                tmp["Timestamp"] = i;
       							tmp["Idea"] = items[link][idea][i];	
       						}
       						ideas.push(tmp);
@@ -82,17 +87,26 @@ function load_ideas() {
       				}
       			}
 
+
      var groupedByDate = groupBy(ideas, 'Date');
      var groupedByLink = groupBy(ideas, 'Link');
 
+     console.log("GroupedByDate:");
      console.log(groupedByDate);
-     console.log(groupedByLink);
+     //console.log(groupedByLink);
      
-     for (var obj in groupedByDate) {
-       $('#idea_list').append('<h4>' + obj + '</h4>').append('<br>');
-       for(var idea in groupedByDate[obj]) {
-         var $link = $("<a>").attr("href", groupedByDate[obj][idea].Link).attr("target", "_blank").text('Link');
-         var $item = $('<li> <p>').text(groupedByDate[obj][idea].Idea).append(' -> ').append($link);
+     var groupedDateKeys = Object.keys(groupedByDate).filter(dt => dt.length == 10);
+     var keys = groupedDateKeys.sort();
+     console.log(groupedDateKeys.sort());             
+     for (dt = groupedDateKeys.length - 1; dt >= 0 ; dt--) {
+         console.log(keys[dt]);
+       $('#idea_list').append('<h4>' + toDateString(keys[dt]) + '</h4>').append('<br>');
+        groupedByDate[keys[dt]].sort(function(a, b) {
+            return (a.Timestamp > b.Timestamp) ? -1 : ((a.Timestamp < b.Timestamp) ? 1 : 0);
+        });
+       for(var idea in groupedByDate[keys[dt]]) {
+         var $link = $("<a>").attr("href", groupedByDate[keys[dt]][idea].Link).attr("target", "_blank").text('->');
+         var $item = $('<li> <p>').text(groupedByDate[keys[dt]][idea].Idea).append(' ').append($link);
          $('#idea_list').append($item).append('<br>');
        }
        $('#idea_list').append('<hr>');
@@ -125,5 +139,5 @@ function load_ideas() {
    //  });
   });
 }
-//clean_ieaa_store();
+cleanIdeaStore();
 load_ideas();

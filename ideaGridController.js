@@ -1,4 +1,4 @@
-{
+var controller = {
     loadData: function(filter) {
         return $.ajax({
             type: "GET",

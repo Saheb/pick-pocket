@@ -25,7 +25,8 @@ function getSelectedIdea() {
 }
 
 function saveIdea(ideaText) {
-    console.log("Saving idea - " + ideaText)
+    console.log("Saving Idea ...");
+    console.info(ideaText);
     if (!ideaText) {
       console.log('Error: No value specified');
       return;
@@ -53,7 +54,7 @@ function saveIdea(ideaText) {
             store[pageUrl] = linkIdeas;
         }
       chrome.storage.sync.set(store, function() {
-      console.log('Idea saved!' + obj.toString());
+      console.log('Idea Saved!');
       });
   });
 }

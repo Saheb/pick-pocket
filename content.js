@@ -26,6 +26,7 @@ function getSelectedIdea() {
 
 function saveIdea(ideaText) {
     console.log("Saving Idea ...");
+    ideaText = ideaText.replace(/<(?:.|\n)*?>/gm, '')
     console.info(ideaText);
     if (!ideaText) {
       console.log('Error: No value specified');

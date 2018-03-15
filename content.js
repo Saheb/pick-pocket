@@ -33,7 +33,7 @@ function saveIdea(ideaText) {
       return;
     }
     // Save it using the Chrome extension storage API.
-    var pageUrl = (window.location.origin + window.location.pathname).toString();
+    var pageUrl = window.location.href;
     var store = {};
     
     chrome.storage.sync.get(pageUrl, function(items){

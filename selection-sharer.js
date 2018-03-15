@@ -261,6 +261,8 @@
       e.preventDefault();
       var text = self.htmlSelection.replace(/<p[^>]*>/ig,'\n').replace(/<\/p>|  /ig,'').trim();
       saveIdea(text);
+      self.hide();
+      return true;
     }
 
     this.render = function() {

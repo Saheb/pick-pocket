@@ -251,9 +251,9 @@
       var text = self.textSelection.replace(/<p[^>]*>/ig,'\n').replace(/<\/p>|  /ig,'').trim();
       var email = {};
       email.subject = encodeURIComponent("Quote from "+document.title);
-      email.body = encodeURIComponent("“"+text+"”")+"%0D%0A%0D%0AFrom: "+document.title+"%0D%0A"+window.location.href;
-      $(this).attr("href","mailto:?subject="+email.subject+"&body="+email.body);
-      self.hide();
+      email.body = encodeURIComponent("“"+text+"”")+"%0D%0A%0D%0AFrom: "+encodeURIComponent(document.title)+"%0D%0A"+encodeURIComponent(window.location.href);
+      $(e.target).attr("href","mailto:?subject="+email.subject+"&body="+email.body);
+      self.hide(e);
       return true;
     };
 
@@ -308,11 +308,17 @@
     this.setElements = function(elements) {
       if(typeof elements == 'string') elements = $(elements);
       self.$elements = elements instanceof $ ? elements : $(elements);
-      self.$elements.mouseup(self.show).mousedown(self.hide).addClass("selectionShareable");
-
-      self.$elements.bind('touchstart', function(e) {
-        self.isMobile = true;
-      });
+      self.$elements.on({
+        mouseup: function (e) {
+          self.show(e);
+        },
+        mousedown: function(e) {
+            self.hide(e);
+        },
+        touchstart: function(e) {
+          self.isMobile = true;
+        }
+      }).addClass("selectionShareable");
 
       document.onselectionchange = self.selectionChanged;
     };

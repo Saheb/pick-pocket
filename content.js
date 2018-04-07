@@ -1,16 +1,16 @@
 var style = document.createElement('link');
-style.rel = 'stylesheet';
-style.type = 'text/css';
-style.href = chrome.extension.getURL('selection-sharer.css');
-(document.head||document.documentElement).appendChild(style);
+// style.rel = 'stylesheet';
+// style.type = 'text/css';
+// style.href = chrome.extension.getURL('selection-sharer.css');
+// (document.head||document.documentElement).appendChild(style);
 
-var js = document.createElement('script');
-js.src = chrome.extension.getURL('jquery-3.2.1.min.js');
-(document.head||document.documentElement).appendChild(js);
+// var js = document.createElement('script');
+// js.src = chrome.extension.getURL('jquery-3.2.1.min.js');
+// (document.head||document.documentElement).appendChild(js);
 
-var js = document.createElement('script');
-js.src = chrome.extension.getURL('selection-sharer.js');
-(document.head||document.documentElement).appendChild(js);
+// var js = document.createElement('script');
+// js.src = chrome.extension.getURL('selection-sharer.js');
+// (document.head||document.documentElement).appendChild(js);
 
 console.log("Piccadilly is organizing ideas for you!");
 
@@ -24,7 +24,7 @@ function getSelectedIdea() {
     return text;
 }
 
-function saveIdea(ideaText) {
+export function saveIdea(ideaText) {
     console.log("Saving Idea ...");
     ideaText = ideaText.replace(/<(?:.|\n)*?>/gm, '')
     console.info(ideaText);

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="jquery-3.2.1.min.js"></script>
-<script type="text/javascript" src="selection-sharer.js"></script>
-	<title></title>
+<link rel="stylesheet" type="text/css" href="share-this/dist/share-this.css">
+<script type="text/javascript" src="share-this/dist/share-this.js"></script>
+<script type="text/javascript" src="share-this/dist/sharers/twitter.js"></script>
+<script type="text/javascript" src="share-this/dist/sharers/email.js"></script>
+<title></title>
 </head>
 <body>
 <br>
@@ -11,6 +13,23 @@
 here it goes to the next line</p>
 </body>
 <script>
-$('p').selectionSharer();
+	var ShareThisViaPiccadilly = (function() {
+    return {
+        name: "piccadilly",
+        render: function(text, rawText) {
+            return "<a title=\"Save Idea\" href=\"#\">"
+                + "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\">"
+                    + "<path d=\"M5 27 L5 5 L25 8 L8 15 Z\" stroke=\"white\" fill=\"currentcolor\" stroke-opacity=\"1\"/>"
+                + "</svg></a>";
+		}
+		
+		
+    };
+})();
+	const mySharerList = [window.ShareThisViaTwitter, ShareThisViaPiccadilly, window.ShareThisViaEmail];
+	const selectionShare = window.ShareThis({
+    sharers: mySharerList
+});
+selectionShare.init();
 </script>
 </html>

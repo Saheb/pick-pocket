@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="share-this/dist/share-this.css">
-<script type="text/javascript" src="share-this/dist/share-this.js"></script>
-<script type="text/javascript" src="share-this/dist/sharers/twitter.js"></script>
-<script type="text/javascript" src="share-this/dist/sharers/email.js"></script>
+<link rel="stylesheet" type="text/css" href="external/share-this/dist/share-this.css">
+<script type="text/javascript" src="external/share-this/dist/share-this.js"></script>
+<script type="text/javascript" src="external/share-this/dist/sharers/twitter.js"></script>
+<script type="text/javascript" src="external/share-this/dist/sharers/email.js"></script>
 <title></title>
 </head>
 <body>
@@ -17,13 +17,16 @@ here it goes to the next line</p>
     return {
         name: "piccadilly",
         render: function(text, rawText) {
+            this.rawText = rawText;
             return "<a title=\"Save Idea\" href=\"#\">"
                 + "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\">"
                     + "<path d=\"M5 27 L5 5 L25 8 L8 15 Z\" stroke=\"white\" fill=\"currentcolor\" stroke-opacity=\"1\"/>"
                 + "</svg></a>";
-		}
-		
-		
+        },
+        action: function(event, item) {
+            console.log(this.rawText);
+            selectionShare.killPopover();
+        }
     };
 })();
 	const mySharerList = [window.ShareThisViaTwitter, ShareThisViaPiccadilly, window.ShareThisViaEmail];

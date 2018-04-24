@@ -24,7 +24,7 @@ function getSelectedIdea() {
     return text;
 }
 
-export function saveIdea(ideaText) {
+function saveIdea(ideaText) {
     console.log("Saving Idea ...");
     ideaText = ideaText.replace(/<(?:.|\n)*?>/gm, '')
     console.info(ideaText);

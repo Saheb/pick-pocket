@@ -12,6 +12,15 @@ var style = document.createElement('link');
 // js.src = chrome.extension.getURL('selection-sharer.js');
 // (document.head||document.documentElement).appendChild(js);
 
+/*
+
+$("#__w2_wMFGqp38127_link").closest(".answer_permalink").href
+
+getSelectionTextAndContainerElement()
+https://stackoverflow.com/a/4637223/1421983
+
+*/
+
 console.log("Piccadilly is organizing ideas for you!");
 
 function getSelectedIdea() {
@@ -24,7 +33,28 @@ function getSelectedIdea() {
     return text;
 }
 
-function saveIdea(ideaText) {
+function getSelectionTextAndContainerElement() {
+    var text = "", containerElement = null;
+    if (typeof window.getSelection != "undefined") {
+        var sel = window.getSelection();
+        if (sel.rangeCount) {
+            var node = sel.getRangeAt(0).commonAncestorContainer;
+            containerElement = node.nodeType == 1 ? node : node.parentNode;
+            text = sel.toString();
+        }
+    } else if (typeof document.selection != "undefined" &&
+               document.selection.type != "Control") {
+        var textRange = document.selection.createRange();
+        containerElement = textRange.parentElement();
+        text = textRange.text;
+    }
+    return {
+        text: text,
+        containerElement: containerElement
+    };
+}
+
+function saveIdea(ideaText, pageUrl) {
     console.log("Saving Idea ...");
     ideaText = ideaText.replace(/<(?:.|\n)*?>/gm, '')
     console.info(ideaText);
@@ -33,9 +63,7 @@ function saveIdea(ideaText) {
       return;
     }
     // Save it using the Chrome extension storage API.
-    var pageUrl = window.location.href;
     var store = {};
-    
     chrome.storage.sync.get(pageUrl, function(items){
         if($.isEmptyObject(items)) //First time picking ideas from this url
         {
@@ -70,10 +98,21 @@ function saveIdea(ideaText) {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    saveIdea(getSelectedIdea());
-    getIdeas();
+    var pageUrl = window.location.href;
+    if(pageUrl.includes("quora.com")) {
+        var elm = getSelectionTextAndContainerElement().containerElement;
+        var qPermaLink = $(elm).parents(".answer_content").find(".answer_permalink")[0].href
+        console.log(qPermaLink);
+        saveIdea(getSelectedIdea(), qPermaLink);
+    } else if(pageUrl.includes("stackoverflow.com")){
+        var elm = getSelectionTextAndContainerElement().containerElement;
+        var soPermaLink = $(elm).parents(".answercell").find(".short-link")[0].href
+        console.log(soPermaLink);
+        saveIdea(getSelectedIdea(), soPermaLink);
+    }
+    else {
+        saveIdea(getSelectedIdea(), pageUrl);
+    }
     if (request.greeting == "hello")
       sendResponse({farewell: "goodbye"});
 });
-
-$('p').selectionSharer();

@@ -99,20 +99,56 @@ function saveIdea(ideaText, pageUrl) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var pageUrl = window.location.href;
-    if(pageUrl.includes("quora.com")) {
-        var elm = getSelectionTextAndContainerElement().containerElement;
-        var qPermaLink = $(elm).parents(".answer_content").find(".answer_permalink")[0].href
-        console.log(qPermaLink);
-        saveIdea(getSelectedIdea(), qPermaLink);
-    } else if(pageUrl.includes("stackoverflow.com")){
-        var elm = getSelectionTextAndContainerElement().containerElement;
-        var soPermaLink = $(elm).parents(".answercell").find(".short-link")[0].href
-        console.log(soPermaLink);
-        saveIdea(getSelectedIdea(), soPermaLink);
-    }
-    else {
-        saveIdea(getSelectedIdea(), pageUrl);
-    }
+    var elm = getSelectionTextAndContainerElement().containerElement;
+    var traceLink = extractTraceUrl(elm, pageUrl);
+    saveIdea(getSelectedIdea(), traceLink);
+    
     if (request.greeting == "hello")
       sendResponse({farewell: "goodbye"});
 });
+
+function extractTraceUrl(elm, pageUrl) {
+    if(pageUrl.includes("quora.com"))
+        return extractQuoraPermalink(elm);
+    else if(pageUrl.includes("stackoverflow.com"))
+        return extractStackoverflowPermalink(elm);
+    else if (pageUrl.includes("reddit.com"))
+        return extractRedditPermalink(elm);
+    else if (pageUrl.includes("news.ycombinator.com"))
+        return extractHNPermalink(elm);
+    else
+        return pageUrl;
+}
+
+function extractQuoraPermalink(elm) {
+    var parent = $(elm).closest("div.q-box.qu-pt--medium.qu-px--medium.qu-pb--tiny");
+    var temp = parent
+    .find("a[color~='gray_dark']")
+    .filter(function() { 
+        console.info($(this).text() === ""); 
+        return $(this).text()=== "" 
+    });
+    var qString = parent.find(".q-flex.qu-mb--tiny")[1].children[0].children[0].href;
+    var userId = temp[1].pathname.replace("profile", "answer");
+    var qPermaLink = qString + userId;
+    console.log(qPermaLink);
+    return qPermaLink;
+}
+
+function extractStackoverflowPermalink(elm){
+    var soPermaLink = $(elm).parents(".answercell").find("a[title~='permalink']")[0].href
+    console.log(soPermaLink);
+    return soPermaLink;
+}
+
+function extractRedditPermalink(elm){
+    var rPermaLink = $(elm).parents("div.entry").find("a.bylink")[0].href
+    console.log(rPermaLink);
+    return rPermaLink;
+}
+
+function extractHNPermalink(elm) {
+    var hnPermaLink = $(elm.previousSibling.parentNode.parentNode).find("span.age")[0].children[0].href;
+    console.log(hnPermaLink);
+    return hnPermaLink;
+}

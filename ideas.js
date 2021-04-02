@@ -55,6 +55,7 @@ function load_ideas() {
             return (a.Timestamp > b.Timestamp) ? -1 : ((a.Timestamp < b.Timestamp) ? 1 : 0);
         });
        for(var idea in groupedByDate[keys[dt]]) {
+         var $src_img = $("<img>").attr("src", "hn.gif");
          var $link = $("<a>").attr("href", groupedByDate[keys[dt]][idea].Link).attr("target", "_blank").text('\u2192');
          var $item = $('<li> <p>').text(groupedByDate[keys[dt]][idea].Idea).append(' ').append($link);
          $('#idea_list').append($item).append('<br>');

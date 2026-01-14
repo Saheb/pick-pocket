@@ -62,7 +62,7 @@ function openGmail(subject, body) {
 }
 
 function formatIdeaForEmail(idea) {
-  return `"${idea.Idea}"\n   Source: ${idea.Link}\n`;
+  return `${idea.Idea}\n   Source: ${idea.Link}\n`;
 }
 
 function shareIdea(idea) {
@@ -207,7 +207,7 @@ function load_ideas() {
 
         const itemHtml = `
             <li class="idea-item" data-date="${dt}" data-idx="${idx}" data-link="${idea.Link}" data-timestamp="${idea.Timestamp}">
-                <div class="idea-content">"${idea.Idea}"</div>
+                <div class="idea-content">${idea.Idea}</div>
                 <div class="idea-meta">
                     <div class="idea-meta-left">
                         ${iconHtml}

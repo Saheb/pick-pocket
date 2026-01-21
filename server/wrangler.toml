@@ -1,0 +1,18 @@
+name = "pick-pocket-server"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# KV namespace for storing ideas
+[[kv_namespaces]]
+binding = "PICK_POCKET_IDEAS_KV"
+id = "d96bb40d890b40ce8396947b3b521b0a"
+
+# Secrets (set via: wrangler secret put RESEND_API_KEY)
+# RESEND_API_KEY = "re_xxxx"
+# RECIPIENT_EMAIL = "sah_xxx@gmail.com"
+
+# Weekly cron trigger (every Sunday at 9am UTC)
+# Cloudflare cron format: "minute hour day-of-month month day-of-week"
+# Use "SUN" or just run daily and check in code
+[triggers]
+crons = ["0 9 * * SUN"]

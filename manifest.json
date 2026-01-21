@@ -6,6 +6,9 @@
     "contextMenus",
     "storage"
   ],
+  "host_permissions": [
+    "https://*.workers.dev/*"
+  ],
   "icons": {
     "16": "idea3.png"
   },

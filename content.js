@@ -40,20 +40,54 @@ const saveIdea = (ideaText, pageUrl) => {
         return;
     }
 
+    const timestamp = (new Date()).toISOString();
+
     // Save it using the Chrome extension LOCAL storage API.
     chrome.storage.local.get(pageUrl, function (items) {
         let store = items || {};
         let linkIdeas = items[pageUrl] || [];
 
         const obj = {};
-        obj[(new Date()).toISOString()] = ideaText;
+        obj[timestamp] = ideaText;
         linkIdeas.push(obj);
 
         store[pageUrl] = linkIdeas;
 
         chrome.storage.local.set(store, function () {
             console.log('Idea Saved locally!');
+
+            // Also sync to server if enabled
+            syncToServer({
+                text: ideaText,
+                url: pageUrl,
+                timestamp: timestamp
+            });
         });
+    });
+};
+
+// Sync idea to server for weekly digest
+const syncToServer = (idea) => {
+    chrome.storage.sync.get(['serverUrl', 'syncEnabled'], function (settings) {
+        if (!settings.syncEnabled || !settings.serverUrl) {
+            console.log('Server sync disabled or URL not configured');
+            return;
+        }
+
+        const url = settings.serverUrl.replace(/\/$/, '') + '/sync';
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify([idea])
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Synced to server:', data);
+            })
+            .catch(error => {
+                console.error('Failed to sync to server:', error);
+            });
     });
 };
 

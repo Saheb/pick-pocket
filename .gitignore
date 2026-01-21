@@ -7,3 +7,5 @@
 dist/*
 target/
 /.idea/
+/server/node_modules/
+/server/.wrangler/

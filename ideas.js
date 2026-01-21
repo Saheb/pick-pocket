@@ -130,6 +130,7 @@ function deleteIdea(link, timestamp) {
         chrome.storage.local.remove(link, function () {
           console.log('Deleted last idea for link, removed key');
           load_ideas(); // Refresh
+          syncDeleteToServer(link, timestamp);
         });
       } else {
         // Update with remaining ideas
@@ -138,9 +139,36 @@ function deleteIdea(link, timestamp) {
         chrome.storage.local.set(store, function () {
           console.log('Idea deleted');
           load_ideas(); // Refresh
+          syncDeleteToServer(link, timestamp);
         });
       }
     }
+  });
+}
+
+function syncDeleteToServer(link, timestamp) {
+  chrome.storage.sync.get(['serverUrl', 'syncEnabled'], function (settings) {
+    if (!settings.syncEnabled || !settings.serverUrl) {
+      return;
+    }
+
+    const url = settings.serverUrl.replace(/\/$/, '') + '/sync';
+
+    fetch(url, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: link,
+        timestamp: timestamp
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Synced deletion to server:', data);
+      })
+      .catch(error => {
+        console.error('Failed to sync deletion:', error);
+      });
   });
 }
 

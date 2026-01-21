@@ -1,32 +1,37 @@
 // Saves options to chrome.storage
-function save_options() {
-  var color = document.getElementById('mailing_frequency').value;
-  var likesColor = document.getElementById('want_ideas_mailed').checked;
+function saveOptions() {
+  const serverUrl = document.getElementById('server_url').value.trim();
+  const mailingFrequency = document.getElementById('mailing_frequency').value;
+  const syncEnabled = document.getElementById('sync_enabled').checked;
+
   chrome.storage.sync.set({
-    favoriteColor: color,
-    likesColor: likesColor
-  }, function() {
-    // Update status to let user know options were saved.
-    var status = document.getElementById('status');
-    status.textContent = 'Options saved.';
-    setTimeout(function() {
+    serverUrl: serverUrl,
+    mailingFrequency: mailingFrequency,
+    syncEnabled: syncEnabled
+  }, function () {
+    // Update status to let user know options were saved
+    const status = document.getElementById('status');
+    status.textContent = '✓ Settings saved!';
+    status.className = 'success';
+    setTimeout(function () {
       status.textContent = '';
-    }, 750);
+      status.className = '';
+    }, 2000);
   });
 }
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-function restore_options() {
-  // Use default value color = 'red' and likesColor = true.
+// Restores settings using the preferences stored in chrome.storage
+function restoreOptions() {
   chrome.storage.sync.get({
-    favoriteColor: "1",
-    likesColor: true
-  }, function(items) {
-    document.getElementById('mailing_frequency').value = items.favoriteColor;
-    document.getElementById('want_ideas_mailed').checked = items.likesColor;
+    serverUrl: '',
+    mailingFrequency: '7',
+    syncEnabled: true
+  }, function (items) {
+    document.getElementById('server_url').value = items.serverUrl;
+    document.getElementById('mailing_frequency').value = items.mailingFrequency;
+    document.getElementById('sync_enabled').checked = items.syncEnabled;
   });
 }
-document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click',
-    save_options);
+
+document.addEventListener('DOMContentLoaded', restoreOptions);
+document.getElementById('save').addEventListener('click', saveOptions);

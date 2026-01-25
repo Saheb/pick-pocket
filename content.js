@@ -68,27 +68,15 @@ const saveIdea = (ideaText, pageUrl) => {
 
 // Sync idea to server for weekly digest
 const syncToServer = (idea) => {
-    chrome.storage.sync.get(['serverUrl', 'syncEnabled'], function (settings) {
-        if (!settings.syncEnabled || !settings.serverUrl) {
-            console.log('Server sync disabled or URL not configured');
-            return;
-        }
-
-        const url = settings.serverUrl.replace(/\/$/, '') + '/sync';
-
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify([idea])
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Synced to server:', data);
-            })
-            .catch(error => {
-                console.error('Failed to sync to server:', error);
-            });
-    });
+    // Delegate to background script to avoid CSP issues on some sites
+    try {
+        chrome.runtime.sendMessage({
+            cmd: 'sync_idea',
+            data: idea
+        });
+    } catch (e) {
+        console.error("Failed to send sync message:", e);
+    }
 };
 
 chrome.runtime.onMessage.addListener(

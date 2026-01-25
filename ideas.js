@@ -283,13 +283,58 @@ function load_ideas() {
   });
 }
 
+function checkSyncEnabled() {
+  chrome.storage.sync.get(['serverUrl', 'syncEnabled'], function (settings) {
+    if (settings.syncEnabled && settings.serverUrl) {
+      $('#send-digest-btn').show();
+    }
+  });
+}
+
+function triggerSendDigest() {
+  const btn = $('#send-digest-btn');
+  const originalText = btn.text();
+  btn.prop('disabled', true).text('⏳ Sending...');
+
+  chrome.storage.sync.get(['serverUrl'], function (settings) {
+    const url = settings.serverUrl.replace(/\/$/, '') + '/send-digest';
+
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(async response => {
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || 'Failed to send (Status: ' + response.status + ')');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.sent) {
+          alert('✅ ' + data.message);
+        } else {
+          alert('ℹ️ ' + data.message);
+        }
+      })
+      .catch(error => {
+        alert('❌ Error: ' + error.message);
+      })
+      .finally(() => {
+        btn.prop('disabled', false).text(originalText);
+      });
+  });
+}
+
 // Bind buttons
 $(document).ready(function () {
   loadMode();
   load_ideas();
+  checkSyncEnabled();
 
   $('#clear-btn').click(cleanIdeaStore);
   $('#share-all-btn').click(shareAllIdeas);
+  $('#send-digest-btn').click(triggerSendDigest);
 
   // Mode toggle handler
   $('#mode-toggle').change(function () {

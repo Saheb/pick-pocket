@@ -41,6 +41,11 @@ export default {
             return handleDelete(request, env);
         }
 
+        // POST /send-digest - manually trigger email
+        if (request.method === 'POST' && url.pathname === '/send-digest') {
+            return handleSendDigest(env);
+        }
+
         return new Response('Not Found', { status: 404, headers: corsHeaders });
     },
 
@@ -49,6 +54,20 @@ export default {
         await sendWeeklyDigest(env);
     },
 };
+
+async function handleSendDigest(env: Env): Promise<Response> {
+    try {
+        const result = await sendWeeklyDigest(env);
+        return new Response(JSON.stringify(result), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    } catch (e: any) {
+        return new Response(JSON.stringify({ error: e.message }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+}
 
 async function handleSync(request: Request, env: Env): Promise<Response> {
     try {
@@ -125,13 +144,13 @@ async function handleDelete(request: Request, env: Env): Promise<Response> {
     }
 }
 
-async function sendWeeklyDigest(env: Env): Promise<void> {
+async function sendWeeklyDigest(env: Env): Promise<{ sent: boolean; message: string }> {
     const raw = await env.PICK_POCKET_IDEAS_KV.get('pending_ideas');
     const ideas: Idea[] = raw ? JSON.parse(raw) : [];
 
     if (ideas.length === 0) {
         console.log('No ideas to send this week.');
-        return;
+        return { sent: false, message: 'No ideas to send' };
     }
 
     // Build email HTML
@@ -184,9 +203,11 @@ async function sendWeeklyDigest(env: Env): Promise<void> {
         console.log('Weekly digest sent successfully!');
         // Clear pending ideas after sending
         await env.PICK_POCKET_IDEAS_KV.put('pending_ideas', '[]');
+        return { sent: true, message: `Digest sent with ${ideas.length} ideas` };
     } else {
         const error = await response.text();
         console.error('Failed to send email:', error);
+        throw new Error('Failed to send email: ' + error);
     }
 }
 

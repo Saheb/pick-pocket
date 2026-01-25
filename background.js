@@ -20,8 +20,42 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
           console.log(response.farewell);
         }
       });
-    } else {
       console.warn("Cannot pick idea from this page.");
     }
   }
 });
+
+// Listen for sync requests from content scripts (to bypass CSP)
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.cmd === 'sync_idea') {
+    syncToServer(request.data);
+  }
+});
+
+const syncToServer = (idea) => {
+  chrome.storage.sync.get(['serverUrl', 'syncEnabled'], function (settings) {
+    if (!settings.syncEnabled || !settings.serverUrl) {
+      console.log('Server sync disabled or URL not configured');
+      return;
+    }
+
+    const url = settings.serverUrl.replace(/\/$/, '') + '/sync';
+    console.log('Syncing to:', url, idea);
+
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([idea])
+    })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Synced to server:', data);
+      })
+      .catch(error => {
+        console.error('Failed to sync to server:', error);
+      });
+  });
+};

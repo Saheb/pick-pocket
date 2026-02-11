@@ -326,11 +326,71 @@ function triggerSendDigest() {
   });
 }
 
+// --- Time Widget ---
+
+function renderTimeWidget() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentDate = now.getDate(); // 1-31
+
+  // --- Year Progress (12 Boxes) ---
+  const startOfYear = new Date(currentYear, 0, 1);
+  const endOfYear = new Date(currentYear + 1, 0, 1);
+  const yearProgressPct = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
+
+  $('#year-percentage').text(yearProgressPct.toFixed(1) + '%');
+  const $yearBoxes = $('#year-boxes');
+  $yearBoxes.empty();
+
+  for (let i = 0; i < 12; i++) {
+    const $box = $('<div class="box"></div>');
+    if (i < currentMonth) {
+      $box.addClass('filled');
+    } else if (i === currentMonth) {
+      // Partial fill for current month
+      const startOfMonth = new Date(currentYear, i, 1);
+      const endOfMonth = new Date(currentYear, i + 1, 1);
+      const monthProgress = ((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100;
+      $box.css('background', `linear-gradient(to right, #3498db ${monthProgress}%, #ecf0f1 ${monthProgress}%)`);
+    }
+    $yearBoxes.append($box);
+  }
+
+  // --- Month Progress (Days in Month Boxes) ---
+  const startOfMonth = new Date(currentYear, currentMonth, 1);
+  const endOfMonth = new Date(currentYear, currentMonth + 1, 1);
+  const monthProgressPct = ((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100;
+
+  // Get days in current month
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  $('#month-percentage').text(monthProgressPct.toFixed(1) + '%');
+  const $monthBoxes = $('#month-boxes');
+  $monthBoxes.empty();
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    const $box = $('<div class="box"></div>');
+    if (i < currentDate) {
+      $box.addClass('filled');
+    } else if (i === currentDate) {
+      // Partial fill for current day
+      const startOfDay = new Date(currentYear, currentMonth, i);
+      const endOfDay = new Date(currentYear, currentMonth, i + 1);
+      const dayProgress = ((now - startOfDay) / (endOfDay - startOfDay)) * 100;
+      $box.css('background', `linear-gradient(to right, #3498db ${dayProgress}%, #ecf0f1 ${dayProgress}%)`);
+    }
+    $monthBoxes.append($box);
+  }
+}
+
 // Bind buttons
 $(document).ready(function () {
   loadMode();
   load_ideas();
   checkSyncEnabled();
+  renderTimeWidget();
+
 
   $('#clear-btn').click(cleanIdeaStore);
   $('#share-all-btn').click(shareAllIdeas);

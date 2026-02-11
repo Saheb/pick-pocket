@@ -384,6 +384,75 @@ function renderTimeWidget() {
   }
 }
 
+
+// --- Export / Import Functions ---
+
+function exportData() {
+  chrome.storage.local.get(null, function (localItems) {
+    chrome.storage.sync.get(null, function (syncItems) {
+      const exportObj = {
+        version: 1,
+        timestamp: new Date().toISOString(),
+        local: localItems,
+        sync: syncItems
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      const dateStr = new Date().toISOString().split('T')[0];
+      downloadAnchorNode.setAttribute("download", `pickpocket-backup-${dateStr}.json`);
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    });
+  });
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      if (!data.local && !data.sync) {
+        alert("❌ Invalid backup file format.");
+        return;
+      }
+
+      if (confirm(`Restore backup from ${new Date(data.timestamp || Date.now()).toLocaleDateString()}?\n\nThis will merge with your current ideas and overwrite settings.`)) {
+
+        // Restore Local (Ideas & Mode)
+        if (data.local) {
+          chrome.storage.local.set(data.local, function () {
+            console.log("Local storage restored");
+          });
+        }
+
+        // Restore Sync (Settings)
+        if (data.sync) {
+          chrome.storage.sync.set(data.sync, function () {
+            console.log("Sync storage restored");
+          });
+        }
+
+        setTimeout(() => {
+          alert("✅ Data restored successfully!");
+          location.reload();
+        }, 500);
+      }
+    } catch (err) {
+      alert("❌ Error parsing backup file: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+  // Reset input so validation works if same file selected again
+  event.target.value = '';
+}
+
 // Bind buttons
 $(document).ready(function () {
   loadMode();
@@ -395,6 +464,13 @@ $(document).ready(function () {
   $('#clear-btn').click(cleanIdeaStore);
   $('#share-all-btn').click(shareAllIdeas);
   $('#send-digest-btn').click(triggerSendDigest);
+
+  // Backup & Restore
+  $('#export-btn').click(exportData);
+  $('#import-btn').click(function () {
+    $('#import-file').click();
+  });
+  $('#import-file').change(importData);
 
   // Mode toggle handler
   $('#mode-toggle').change(function () {

@@ -311,10 +311,37 @@
             font-size: 1.1em;
             font-weight: 700;
             color: #2c3e50;
-            width: 60px;
+            width: 130px;
             /* Fixed width for alignment */
             text-align: left;
             flex-shrink: 0;
+        }
+
+        #time-widget {
+            background: #fff;
+            padding: 25px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .time-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #life-boxes {
+            gap: 3px;
+        }
+
+        #life-boxes .box {
+            border-radius: 1px;
+            flex: 1;
+            height: 12px;
         }
     </style>
     <title>Pick Pocket</title>
@@ -323,6 +350,11 @@
 <body class="self-mode">
 
     <div id="time-widget">
+        <div class="time-row" id="life-row" style="display: none;">
+            <div class="time-label">Life</div>
+            <div class="boxes-container" id="life-boxes"></div>
+            <div class="percentage-text" id="life-percentage">--%</div>
+        </div>
         <div class="time-row" id="year-row">
             <div class="time-label">Year</div>
             <div class="boxes-container" id="year-boxes"></div>

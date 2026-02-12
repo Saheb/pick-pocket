@@ -334,6 +334,42 @@ function renderTimeWidget() {
   const currentMonth = now.getMonth(); // 0-11
   const currentDate = now.getDate(); // 1-31
 
+  // --- Life Progress (80 Years) ---
+  chrome.storage.sync.get(['birthYear'], function (result) {
+    if (result.birthYear) {
+      const birthYear = parseInt(result.birthYear);
+      const lifeExpectancy = 75;
+      const deathYear = birthYear + lifeExpectancy;
+
+      const startOfLife = new Date(birthYear, 0, 1);
+      const endOfLife = new Date(deathYear, 0, 1);
+      const lifeProgressPct = ((now - startOfLife) / (endOfLife - startOfLife)) * 100;
+
+      const currentAge = now.getFullYear() - birthYear;
+      $('#life-percentage').text(`${currentAge} years (${lifeProgressPct.toFixed(1)}%)`);
+      const $lifeBoxes = $('#life-boxes');
+      $lifeBoxes.empty();
+      $('#life-row').show();
+
+      for (let i = 0; i < lifeExpectancy; i++) {
+        const $box = $('<div class="box"></div>');
+        if (i < currentAge) {
+          $box.addClass('filled');
+        } else if (i === currentAge) {
+          // Partial fill for current year of life
+          const yearInLife = birthYear + i;
+          const startOfThisYear = new Date(yearInLife, 0, 1);
+          const endOfThisYear = new Date(yearInLife + 1, 0, 1);
+          const yearProgress = ((now - startOfThisYear) / (endOfThisYear - startOfThisYear)) * 100;
+          $box.css('background', `linear-gradient(to right, #3498db ${yearProgress}%, #ecf0f1 ${yearProgress}%)`);
+        }
+        $lifeBoxes.append($box);
+      }
+    } else {
+      $('#life-row').hide();
+    }
+  });
+
   // --- Year Progress (12 Boxes) ---
   const startOfYear = new Date(currentYear, 0, 1);
   const endOfYear = new Date(currentYear + 1, 0, 1);

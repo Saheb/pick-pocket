@@ -1,4 +1,4 @@
-console.log("Pick Pocket is ready!");
+// console.log("Pick Pocket is ready!");
 
 const getSelectedIdea = () => {
     let text = "";
@@ -32,11 +32,11 @@ const getSelectionTextAndContainerElement = () => {
 };
 
 const saveIdea = (ideaText, pageUrl) => {
-    console.log("Saving Idea ...");
+    // console.log("Saving Idea ...");
     ideaText = ideaText.replace(/<(?:.|\n)*?>/gm, ''); // Strip HTML tags
-    console.info(ideaText);
+    // console.info(ideaText);
     if (!ideaText) {
-        console.log('Error: No value specified');
+        // console.log('Error: No value specified');
         return;
     }
 
@@ -54,7 +54,7 @@ const saveIdea = (ideaText, pageUrl) => {
         store[pageUrl] = linkIdeas;
 
         chrome.storage.local.set(store, function () {
-            console.log('Idea Saved locally!');
+            // console.log('Idea Saved locally!');
 
             // Also sync to server if enabled
             syncToServer({

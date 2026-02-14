@@ -17,10 +17,10 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
           // Ignore "Could not establish connection" errors safely
           console.log("Ignored messaging error: ", chrome.runtime.lastError.message);
         } else if (response) {
-          console.log(response.farewell);
+          // console.log(response.farewell);
         }
       });
-      console.warn("Cannot pick idea from this page.");
+      // console.warn("Cannot pick idea from this page.");
     }
   }
 });
@@ -35,12 +35,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 const syncToServer = (idea) => {
   chrome.storage.sync.get(['serverUrl', 'syncEnabled'], function (settings) {
     if (!settings.syncEnabled || !settings.serverUrl) {
-      console.log('Server sync disabled or URL not configured');
+      // console.log('Server sync disabled or URL not configured');
       return;
     }
 
     const url = settings.serverUrl.replace(/\/$/, '') + '/sync';
-    console.log('Syncing to:', url, idea);
+    // console.log('Syncing to:', url, idea);
 
     fetch(url, {
       method: 'POST',
@@ -52,7 +52,7 @@ const syncToServer = (idea) => {
         return response.json();
       })
       .then(data => {
-        console.log('Synced to server:', data);
+        // console.log('Synced to server:', data);
       })
       .catch(error => {
         console.error('Failed to sync to server:', error);

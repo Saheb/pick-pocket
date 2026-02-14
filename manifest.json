@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Pick Pocket",
   "version": "0.1",
+  "description": "Seize ideas, arguments, and thoughts to contemplate later.",
   "permissions": [
     "contextMenus",
     "storage"
@@ -10,7 +11,9 @@
     "https://*.workers.dev/*"
   ],
   "icons": {
-    "16": "idea3.png"
+    "16": "idea3.png",
+    "48": "idea48.png",
+    "128": "idea128.png"
   },
   "content_scripts": [
     {
@@ -46,7 +49,9 @@
         "selection-sharer.css",
         "jquery-3.2.1.min.js",
         "selection-sharer.js",
-        "idea3.png"
+        "idea3.png",
+        "idea48.png",
+        "idea128.png"
       ],
       "matches": [
         "<all_urls>"

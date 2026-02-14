@@ -4,7 +4,7 @@ let allIdeas = [];
 function cleanIdeaStore() {
   if (confirm("Are you sure you want to delete ALL saved ideas? This cannot be undone.")) {
     chrome.storage.local.clear(function () {
-      console.log('Store Cleaned!');
+      // console.log('Store Cleaned!');
       location.reload();
     });
   }
@@ -128,7 +128,7 @@ function deleteIdea(link, timestamp) {
       if (updatedIdeas.length === 0) {
         // No more ideas for this link, remove the key entirely
         chrome.storage.local.remove(link, function () {
-          console.log('Deleted last idea for link, removed key');
+          // console.log('Deleted last idea for link, removed key');
           load_ideas(); // Refresh
           syncDeleteToServer(link, timestamp);
         });
@@ -137,7 +137,7 @@ function deleteIdea(link, timestamp) {
         const store = {};
         store[link] = updatedIdeas;
         chrome.storage.local.set(store, function () {
-          console.log('Idea deleted');
+          // console.log('Idea deleted');
           load_ideas(); // Refresh
           syncDeleteToServer(link, timestamp);
         });
@@ -164,7 +164,7 @@ function syncDeleteToServer(link, timestamp) {
     })
       .then(response => response.json())
       .then(data => {
-        console.log('Synced deletion to server:', data);
+        // console.log('Synced deletion to server:', data);
       })
       .catch(error => {
         console.error('Failed to sync deletion:', error);
@@ -176,7 +176,7 @@ function syncDeleteToServer(link, timestamp) {
 
 function load_ideas() {
   chrome.storage.local.get(null, function (items) {
-    console.log(items);
+    // console.log(items);
 
     allIdeas = []; // Reset global
 
@@ -464,14 +464,14 @@ function importData(event) {
         // Restore Local (Ideas & Mode)
         if (data.local) {
           chrome.storage.local.set(data.local, function () {
-            console.log("Local storage restored");
+            // console.log("Local storage restored");
           });
         }
 
         // Restore Sync (Settings)
         if (data.sync) {
           chrome.storage.sync.set(data.sync, function () {
-            console.log("Sync storage restored");
+            // console.log("Sync storage restored");
           });
         }
 

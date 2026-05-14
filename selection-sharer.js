@@ -41,12 +41,19 @@
       e.preventDefault();
       e.stopPropagation();
 
-      const selectedText = window.getSelection().toString().trim();
-      if (selectedText && selectedText.length > 0) {
-        // Call saveIdea from content.js
+      const selection = window.getSelection();
+      let selectedHTML = "";
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const fragment = range.cloneContents();
+        const div = document.createElement('div');
+        div.appendChild(fragment);
+        selectedHTML = div.innerHTML.trim();
+      }
+      if (selectedHTML && selectedHTML.length > 0) {
         if (typeof saveIdea === 'function') {
           const pageUrl = window.location.href;
-          saveIdea(selectedText, pageUrl);
+          saveIdea(selectedHTML, pageUrl);
 
           // Visual feedback
           $popover.text('✓ Picked!');

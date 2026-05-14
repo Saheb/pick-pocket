@@ -61,8 +61,15 @@ function openGmail(subject, body) {
   window.open(url, '_blank');
 }
 
+const htmlToPlainText = (html) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return (div.textContent || div.innerText || '').trim();
+};
+
 function formatIdeaForEmail(idea) {
-  return `${idea.Idea}\n   Source: ${idea.Link}\n`;
+  const text = htmlToPlainText(idea.Idea);
+  return `${text}\n   Source: ${idea.Link}\n`;
 }
 
 function shareIdea(idea) {

@@ -1,13 +1,17 @@
 // console.log("Pick Pocket is ready!");
 
 const getSelectedIdea = () => {
-    let text = "";
-    if (window.getSelection) {
-        text = window.getSelection().toString();
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const fragment = range.cloneContents();
+        const div = document.createElement('div');
+        div.appendChild(fragment);
+        return div.innerHTML;
     } else if (document.selection && document.selection.type != "Control") {
-        text = document.selection.createRange().text;
+        return document.selection.createRange().htmlText;
     }
-    return text;
+    return "";
 };
 
 const getSelectionTextAndContainerElement = () => {
@@ -31,10 +35,20 @@ const getSelectionTextAndContainerElement = () => {
     };
 };
 
+const sanitizeHTML = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    div.querySelectorAll('script, style, iframe, object, embed').forEach(el => el.remove());
+    div.querySelectorAll('*').forEach(el => {
+        [...el.attributes].forEach(attr => {
+            if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
+        });
+    });
+    return div.innerHTML;
+};
+
 const saveIdea = (ideaText, pageUrl) => {
-    // console.log("Saving Idea ...");
-    ideaText = ideaText.replace(/<(?:.|\n)*?>/gm, ''); // Strip HTML tags
-    // console.info(ideaText);
+    ideaText = sanitizeHTML(ideaText);
     if (!ideaText) {
         // console.log('Error: No value specified');
         return;
